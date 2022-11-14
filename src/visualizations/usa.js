@@ -10,6 +10,8 @@ export function Usa(props) {
     const [csvData, setcsvData] = useState([]);
     const [jsonData, setJsonData] = useState([]);
     const [category, setCategory] = useState("");
+    const [oldData, setOldData] = useState();
+    const [previousFill,setPreviousFill] = useState();
     let prevFill = ""
     let prevState = ""
     const renderSvg = () => {
@@ -24,6 +26,9 @@ export function Usa(props) {
             const stateObj = csvData.find(elem => elem.State === state)
             const categoryValue = parseFloat(stateObj[category]);
             d3.select("#state-"+prevState).style("fill",prevFill);
+            if(oldData!==undefined) {
+                d3.select("#state-" + oldData.properties.GEO_ID).style("fill", previousFill);
+            }
             presentD3Svg.select("#current").remove()
             presentD3Svg.selectAll("#state").remove()
             const presentG = presentD3Svg.append("g").attr("id","current").attr("class","map")
@@ -41,7 +46,9 @@ export function Usa(props) {
                 .attr("text-anchor", "middle")
                 .attr('font-size', '12pt');
             prevFill=d3.select('#state-' + data.properties.GEO_ID).attr("fill")
+            setPreviousFill(prevFill)
             prevState=data.properties.GEO_ID
+            setOldData(data)
             return d3.select('#state-' + data.properties.GEO_ID).style('fill', '#72bcd4')
         }
         if (jsonData.length !== 0) {
@@ -112,7 +119,30 @@ export function Usa(props) {
                 .attr("text-anchor", "middle")
                 .attr('font-size', '6pt')
                 .on('click', handleClick)
-            ;
+            if(oldData !== undefined) {
+                const state = oldData.properties.NAME;
+                const stateObj = csvData.find(elem => elem.State === state)
+                const categoryValue = parseFloat(stateObj[category]);
+                const {height, width} = svg.current.getBBox();
+                const projectionPres = d3.geoAlbersUsa().scale(900).fitSize([width, height], oldData)
+                const geoGeneratorPres = d3.geoPath().projection(projectionPres)
+                const presentG = presentD3Svg.append("g").attr("id", "current").attr("class", "map")
+                presentG.append("path").attr("d", geoGeneratorPres(oldData)).style('fill', '#72bcd4');
+                d3.select('#state-' + oldData.properties.GEO_ID).style('fill', '#72bcd4')
+                presentG.append("svg:text")
+                    .text(oldData.properties.NAME)
+                    .attr("x", width/2)
+                    .attr("y", height/2)
+                    .attr("text-anchor", "middle")
+                    .attr('font-size', '12pt');
+                presentG.append("svg:text")
+                    .text(`${category} : ${categoryValue}`)
+                    .attr("x", width/2)
+                    .attr("y", height/2+30)
+                    .attr("text-anchor", "middle")
+                    .attr('font-size', '12pt');
+
+            }
         }
         if (!!svg.current) {
             const {height, width} = svg.current.getBBox();
@@ -122,11 +152,13 @@ export function Usa(props) {
             const {height, width} = svg.current.getBBox();
             presentSvg.current.setAttribute("viewBox", `0 0 ${(width + 50)} ${height + 30}`)
             const presentD3Svg = d3.select(presentSvg.current)
-            presentD3Svg.insert("g").attr("id","state").append("svg:text").text("Please click on state")
-                .attr("x", width/2)
-                .attr("y", height/2)
-                .attr("text-anchor", "middle")
-                .attr('font-size', '16pt');
+            if(oldData===undefined) {
+                presentD3Svg.insert("g").attr("id", "state").append("svg:text").text("Please click on state")
+                    .attr("x", width / 2)
+                    .attr("y", height / 2)
+                    .attr("text-anchor", "middle")
+                    .attr('font-size', '16pt');
+            }
         }
     }
     useEffect(() => {
