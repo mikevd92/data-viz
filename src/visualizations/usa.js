@@ -14,6 +14,7 @@ export function Usa(props) {
     let prevState = ""
     const renderSvg = () => {
         const presentD3Svg = d3.select(presentSvg.current)
+        presentD3Svg.selectAll("#state").remove()
         presentD3Svg.select("#current").remove()
         const handleClick = (event, data) => {
             const {height, width} = svg.current.getBBox();
