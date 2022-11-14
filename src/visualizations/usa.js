@@ -13,8 +13,9 @@ export function Usa(props) {
     let prevFill = ""
     let prevState = ""
     const renderSvg = () => {
+        const presentD3Svg = d3.select(presentSvg.current)
+        presentD3Svg.select("#current").remove()
         const handleClick = (event, data) => {
-            const presentD3Svg = d3.select(presentSvg.current)
             const {height, width} = svg.current.getBBox();
             const projectionPres = d3.geoAlbersUsa().scale(900).fitSize([width,height],data)
             const geoGeneratorPres = d3.geoPath().projection(projectionPres)
