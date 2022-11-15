@@ -2,7 +2,6 @@ import {useEffect, useRef, useState} from "react";
 import * as d3 from 'd3';
 import {legendColor} from 'd3-svg-legend'
 import {Col, DropdownButton, Row, Dropdown} from "react-bootstrap";
-import data from "bootstrap/js/src/dom/data";
 
 export function Usa(props) {
     const ref = useRef()
@@ -156,7 +155,8 @@ export function Usa(props) {
             presentSvg.current.setAttribute("viewBox", `0 0 ${(width + 50)} ${height + 30}`)
             const presentD3Svg = d3.select(presentSvg.current)
             if(oldData===undefined) {
-                presentD3Svg.insert("g").attr("id", "state").append("svg:text").text("Please click on state")
+                presentD3Svg.insert("g").attr("id", "state").append("svg:text").text("Please click on a state")
+                presentD3Svg.insert("g").attr("id", "state").append("svg:text").text("Please click on a state")
                     .attr("x", width / 2)
                     .attr("y", height / 2)
                     .attr("text-anchor", "middle")
