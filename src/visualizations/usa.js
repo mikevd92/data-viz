@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import * as d3 from 'd3';
 import {legendColor} from 'd3-svg-legend'
 import {Col, DropdownButton, Row, Dropdown} from "react-bootstrap";
+import data from "bootstrap/js/src/dom/data";
 
 export function Usa(props) {
     const ref = useRef()
@@ -91,6 +92,12 @@ export function Usa(props) {
                 .attr('id', (data) => {
                     return 'state-' + data.properties.GEO_ID
                 }).on('click', handleClick)
+                .on('mouseover',data=>{
+                    d3Svg.style("cursor","pointer")
+                })
+                .on('mouseout',data=>{
+                    d3Svg.style("cursor","pointer")
+                })
                 // .on('mouseout', (event, data) => {
                 //     const {height, width} = svg.current.getBBox();
                 //     const state = data.properties.NAME;
