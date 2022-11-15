@@ -92,10 +92,19 @@ export function Usa(props) {
                 .attr('id', (data) => {
                     return 'state-' + data.properties.GEO_ID
                 }).on('click', handleClick)
-                .on('mouseover',data=>{
+                .on('mouseover',(event,data)=>{
                     d3Svg.style("cursor","pointer")
+                    d3.select('#state-' + data.properties.GEO_ID).style('fill', '#d0c172')
                 })
-                .on('mouseout',data=>{
+                .on('mouseout',(event,data)=>{
+                    const state = data.properties.NAME;
+                    const stateObj = csvData.find(elem => elem.State === state)
+                    const categoryValue = parseFloat(stateObj[category]);
+                    if(prevState === '' || prevState !== data.properties.GEO_ID) {
+                        d3.select('#state-' + data.properties.GEO_ID).style('fill', color(categoryValue))
+                    }else if(prevState === data.properties.GEO_ID){
+                        d3.select('#state-' + data.properties.GEO_ID).style('fill', '#72bcd4')
+                    }
                     d3Svg.style("cursor","pointer")
                 })
                 // .on('mouseout', (event, data) => {
