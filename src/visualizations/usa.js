@@ -17,51 +17,47 @@ export function Usa(props) {
         const presentD3Svg = d3.select(presentSvg.current)
         presentD3Svg.selectAll("#state").remove()
         presentD3Svg.select("#current").remove()
-        const handleClick = (event, data) => {
-            const {height, width} = svg.current.getBBox();
-            const values = csvData.map(item => item[category]);
-            const min=Math.min(...values)
-            const max=Math.max(...values)
-            const color = d3.scaleLinear().domain([min,max]).range(["#ffcccc", "red"])
-            const projectionPres = d3.geoAlbersUsa().scale(900).fitSize([width,height],data)
-            const geoGeneratorPres = d3.geoPath().projection(projectionPres)
-            if(oldData!==undefined) {
-                const oldState = oldData.properties.NAME;
-                const oldStateObj = csvData.find(elem => elem.State === oldState)
-                const oldCategoryValue = parseFloat(oldStateObj[category]);
-                d3.select("#state-" + oldData.properties.GEO_ID).style("fill", color(oldCategoryValue));
-            }
-            const state = data.properties.NAME;
-            const stateObj = csvData.find(elem => elem.State === state)
-            const categoryValue = parseFloat(stateObj[category]);
-            d3.select("#state-" + prevState).style("fill", prevFill)
-            d3.select("#state-" + data.properties.GEO_ID).style('fill', '#72bcd4')
-            presentD3Svg.select("#current").remove()
-            presentD3Svg.selectAll("#state").remove()
-            const presentG = presentD3Svg.append("g").attr("id","current").attr("class","map")
-            presentG.append("path").attr("d",geoGeneratorPres(data)).style('fill', '#72bcd4');
-            presentG.append("svg:text")
-                .text(data.properties.NAME)
-                .attr("x", width/2)
-                .attr("y", height/2)
-                .attr("text-anchor", "middle")
-                .attr('font-size', '12pt');
-            presentG.append("svg:text")
-                .text(`${category} : ${categoryValue}`)
-                .attr("x", width/2)
-                .attr("y", height/2+30)
-                .attr("text-anchor", "middle")
-                .attr('font-size', '12pt');
-            prevFill=d3.select('#state-' + data.properties.GEO_ID).attr("fill")
-            prevState=data.properties.GEO_ID
-            setOldData(data)
-            return d3.select('#state-' + data.properties.GEO_ID).style('fill', '#72bcd4')
-        }
         if (jsonData.length !== 0) {
             const values = csvData.map(item => item[category]);
             const min=Math.min(...values)
             const max=Math.max(...values)
             const color = d3.scaleLinear().domain([min,max]).range(["#ffcccc", "red"])
+            const handleClick = (event, data) => {
+                const {height, width} = svg.current.getBBox();
+                const projectionPres = d3.geoAlbersUsa().scale(900).fitSize([width,height],data)
+                const geoGeneratorPres = d3.geoPath().projection(projectionPres)
+                if(oldData!==undefined) {
+                    const oldState = oldData.properties.NAME;
+                    const oldStateObj = csvData.find(elem => elem.State === oldState)
+                    const oldCategoryValue = parseFloat(oldStateObj[category]);
+                    d3.select("#state-" + oldData.properties.GEO_ID).style("fill", color(oldCategoryValue));
+                }
+                const state = data.properties.NAME;
+                const stateObj = csvData.find(elem => elem.State === state)
+                const categoryValue = parseFloat(stateObj[category]);
+                d3.select("#state-" + prevState).style("fill", prevFill)
+                d3.select("#state-" + data.properties.GEO_ID).style('fill', '#72bcd4')
+                presentD3Svg.select("#current").remove()
+                presentD3Svg.selectAll("#state").remove()
+                const presentG = presentD3Svg.append("g").attr("id","current").attr("class","map")
+                presentG.append("path").attr("d",geoGeneratorPres(data)).style('fill', '#72bcd4');
+                presentG.append("svg:text")
+                    .text(data.properties.NAME)
+                    .attr("x", width/2)
+                    .attr("y", height/2)
+                    .attr("text-anchor", "middle")
+                    .attr('font-size', '12pt');
+                presentG.append("svg:text")
+                    .text(`${category} : ${categoryValue}`)
+                    .attr("x", width/2)
+                    .attr("y", height/2+30)
+                    .attr("text-anchor", "middle")
+                    .attr('font-size', '12pt');
+                prevFill=d3.select('#state-' + data.properties.GEO_ID).attr("fill")
+                prevState=data.properties.GEO_ID
+                setOldData(data)
+                return d3.select('#state-' + data.properties.GEO_ID).style('fill', '#72bcd4')
+            }
             let projection = d3.geoAlbersUsa().scale(900).translate([400, 210]);
             let geoGenerator = d3.geoPath()
                 .projection(projection);
