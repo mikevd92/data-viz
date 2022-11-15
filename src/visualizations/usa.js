@@ -46,13 +46,13 @@ export function Usa(props) {
                     .attr("x", width/2)
                     .attr("y", height/2)
                     .attr("text-anchor", "middle")
-                    .attr('font-size', '12pt');
+                    .attr('font-size', '18pt');
                 presentG.append("svg:text")
                     .text(`${category} : ${categoryValue}`)
                     .attr("x", width/2)
                     .attr("y", height/2+30)
                     .attr("text-anchor", "middle")
-                    .attr('font-size', '12pt');
+                    .attr('font-size', '18pt');
                 prevFill=d3.select('#state-' + data.properties.GEO_ID).attr("fill")
                 prevState=data.properties.GEO_ID
                 setOldData(data)
@@ -136,13 +136,13 @@ export function Usa(props) {
                     .attr("x", width/2)
                     .attr("y", height/2)
                     .attr("text-anchor", "middle")
-                    .attr('font-size', '12pt');
+                    .attr('font-size', '18pt');
                 presentG.append("svg:text")
                     .text(`${category} : ${categoryValue}`)
                     .attr("x", width/2)
                     .attr("y", height/2+30)
                     .attr("text-anchor", "middle")
-                    .attr('font-size', '12pt');
+                    .attr('font-size', '18pt');
 
             }
         }
@@ -159,7 +159,7 @@ export function Usa(props) {
                     .attr("x", width / 2)
                     .attr("y", height / 2)
                     .attr("text-anchor", "middle")
-                    .attr('font-size', '16pt');
+                    .attr('font-size', '18pt');
             }
         }
     }
@@ -194,7 +194,7 @@ export function Usa(props) {
             </Col>
         </Row>
         <Row>
-            <Col>
+            <Col className="col-md-8">
             <svg preserveAspectRatio="xMinYMin meet" ref={svg}>
                 <g ref={ref} className="map"></g>
             </svg>
