@@ -12,8 +12,10 @@ export function Usa(props) {
     const [category, setCategory] = useState("");
     const [oldData, setOldData] = useState();
     const [oldState, setOldState] = useState("");
+    const [oldName, setOldName] = useState("")
     let prevFill = ""
     let prevState = oldState;
+    let prevName = oldName;
     const renderSvg = () => {
         const presentD3Svg = d3.select(presentSvg.current)
         presentD3Svg.selectAll("#state").remove()
@@ -23,6 +25,21 @@ export function Usa(props) {
             const min=Math.min(...values)
             const max=Math.max(...values)
             const color = d3.scaleLinear().domain([min,max]).range(["#ffcccc", "red"])
+            const clickAway = ()=>{
+                const prevStateObj = csvData.find(elem => elem.State === prevName)
+                const prevCategoryValue = parseFloat(prevStateObj[category]);
+                d3.select("#state-" + prevState).style("fill", color(prevCategoryValue));
+                presentD3Svg.select("#current").remove()
+                setOldName("")
+                setOldState("")
+                setOldData(undefined)
+            }
+            const mouseover = ()=>{
+                presentD3Svg.style("cursor","pointer")
+            }
+            const mouseout = ()=>{
+                presentD3Svg.style("cursor","default")
+            }
             const handleClick = (event, data) => {
                 const {height, width} = svg.current.getBBox();
                 const projectionPres = d3.geoAlbersUsa().scale(900).fitSize([width,height],data)
@@ -41,23 +58,29 @@ export function Usa(props) {
                 presentD3Svg.select("#current").remove()
                 presentD3Svg.selectAll("#state").remove()
                 const presentG = presentD3Svg.append("g").attr("id","current").attr("class","map")
-                presentG.append("path").attr("d",geoGeneratorPres(data)).style('fill', '#72bcd4');
+                presentG.append("path").attr("d",geoGeneratorPres(data)).style('fill', '#72bcd4').on('click',clickAway)
+                    .on('mouseover',mouseover)
+                    .on('mouseout',mouseout);
                 presentG.append("svg:text")
                     .text(data.properties.NAME)
                     .attr("x", width/2)
                     .attr("y", height/2)
                     .attr("text-anchor", "middle")
-                    .attr('font-size', '18pt');
+                    .attr('font-size', '18pt').on('click',clickAway).on('mouseover',mouseover)
+                    .on('mouseout',mouseout);
                 presentG.append("svg:text")
                     .text(`${category} : ${categoryValue}`)
                     .attr("x", width/2)
                     .attr("y", height/2+30)
                     .attr("text-anchor", "middle")
-                    .attr('font-size', '18pt');
+                    .attr('font-size', '18pt').on('click',clickAway).on('mouseover',mouseover)
+                    .on('mouseout',mouseout);
                 prevFill=d3.select('#state-' + data.properties.GEO_ID).attr("fill")
                 prevState=data.properties.GEO_ID
                 setOldData(data)
                 setOldState(prevState)
+                prevName = data.properties.NAME
+                setOldName(prevName)
                 return d3.select('#state-' + data.properties.GEO_ID).style('fill', '#72bcd4')
             }
             let projection = d3.geoAlbersUsa().scale(900).translate([400, 210]);
@@ -106,7 +129,7 @@ export function Usa(props) {
                     }else if(prevState === data.properties.GEO_ID){
                         d3.select('#state-' + data.properties.GEO_ID).style('fill', '#72bcd4')
                     }
-                    d3Svg.style("cursor","pointer")
+                    d3Svg.style("cursor","default")
                 })
             texts = g.selectAll('texts')
             texts.data(jsonData.features)
@@ -120,7 +143,21 @@ export function Usa(props) {
                 .attr("y", data => geoGenerator.centroid(data)[1])
                 .attr("text-anchor", "middle")
                 .attr('font-size', '6pt')
-                .on('click', handleClick)
+                .on('click', handleClick).on('mouseover',(event,data)=>{
+                d3Svg.style("cursor","pointer")
+                d3.select('#state-' + data.properties.GEO_ID).style('fill', '#d0c172')
+            })
+                .on('mouseout',(event,data)=>{
+                    const state = data.properties.NAME;
+                    const stateObj = csvData.find(elem => elem.State === state)
+                    const categoryValue = parseFloat(stateObj[category]);
+                    if(prevState === '' || prevState !== data.properties.GEO_ID) {
+                        d3.select('#state-' + data.properties.GEO_ID).style('fill', color(categoryValue))
+                    }else if(prevState === data.properties.GEO_ID){
+                        d3.select('#state-' + data.properties.GEO_ID).style('fill', '#72bcd4')
+                    }
+                    d3Svg.style("cursor","default")
+                })
             if(oldData !== undefined) {
                 const state = oldData.properties.NAME;
                 const stateObj = csvData.find(elem => elem.State === state)
@@ -129,20 +166,24 @@ export function Usa(props) {
                 const projectionPres = d3.geoAlbersUsa().scale(900).fitSize([width, height], oldData)
                 const geoGeneratorPres = d3.geoPath().projection(projectionPres)
                 const presentG = presentD3Svg.append("g").attr("id", "current").attr("class", "map")
-                presentG.append("path").attr("d", geoGeneratorPres(oldData)).style('fill', '#72bcd4');
+                    .on('mouseover',mouseover)
+                    .on('mouseout',mouseout)
+                presentG.append("path").attr("d", geoGeneratorPres(oldData)).style('fill', '#72bcd4').on('click',clickAway)
                 d3.select('#state-' + oldData.properties.GEO_ID).style('fill', '#72bcd4')
                 presentG.append("svg:text")
                     .text(oldData.properties.NAME)
                     .attr("x", width/2)
                     .attr("y", height/2)
                     .attr("text-anchor", "middle")
-                    .attr('font-size', '18pt');
+                    .attr('font-size', '18pt').on('click',clickAway).on('mouseover',mouseover)
+                    .on('mouseout',mouseout);
                 presentG.append("svg:text")
                     .text(`${category} : ${categoryValue}`)
                     .attr("x", width/2)
                     .attr("y", height/2+30)
                     .attr("text-anchor", "middle")
-                    .attr('font-size', '18pt');
+                    .attr('font-size', '18pt').on('click',clickAway).on('mouseover',mouseover)
+                    .on('mouseout',mouseout);
 
             }
         }
