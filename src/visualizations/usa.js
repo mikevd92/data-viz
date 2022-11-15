@@ -69,9 +69,9 @@ export function Usa(props) {
             paths.remove();
             let texts = g.selectAll("text")
             texts.remove();
-            const legend = legendColor().title(category).scale(color)
+            const legend = legendColor().title(category).orient('horizontal').shapePadding(50).scale(color)
             legendG = d3Svg.append("g").attr("id", "legend")
-            legendG.attr("transform", "translate(750,40)")
+            legendG.attr("transform", "translate(200,440)")
                 .call(legend)
             paths = g.selectAll('path')
             paths
