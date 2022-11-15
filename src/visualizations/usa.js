@@ -12,22 +12,23 @@ export function Usa(props) {
     const [jsonData, setJsonData] = useState([]);
     const [category, setCategory] = useState("");
     const [oldData, setOldData] = useState();
+    const [oldState, setOldState] = useState("");
     let prevFill = ""
-    let prevState = ""
+    let prevState = oldState;
     const renderSvg = () => {
         const presentD3Svg = d3.select(presentSvg.current)
         presentD3Svg.selectAll("#state").remove()
         presentD3Svg.select("#current").remove()
         if (jsonData.length !== 0) {
             const values = csvData.map(item => item[category]);
-            const min = Math.min(...values)
-            const max = Math.max(...values)
-            const color = d3.scaleLinear().domain([min, max]).range(["#ffcccc", "red"])
+            const min=Math.min(...values)
+            const max=Math.max(...values)
+            const color = d3.scaleLinear().domain([min,max]).range(["#ffcccc", "red"])
             const handleClick = (event, data) => {
                 const {height, width} = svg.current.getBBox();
-                const projectionPres = d3.geoAlbersUsa().scale(900).fitSize([width, height], data)
+                const projectionPres = d3.geoAlbersUsa().scale(900).fitSize([width,height],data)
                 const geoGeneratorPres = d3.geoPath().projection(projectionPres)
-                if (oldData !== undefined) {
+                if(oldData!==undefined) {
                     const oldState = oldData.properties.NAME;
                     const oldStateObj = csvData.find(elem => elem.State === oldState)
                     const oldCategoryValue = parseFloat(oldStateObj[category]);
@@ -40,23 +41,24 @@ export function Usa(props) {
                 d3.select("#state-" + data.properties.GEO_ID).style('fill', '#72bcd4')
                 presentD3Svg.select("#current").remove()
                 presentD3Svg.selectAll("#state").remove()
-                const presentG = presentD3Svg.append("g").attr("id", "current").attr("class", "map")
-                presentG.append("path").attr("d", geoGeneratorPres(data)).style('fill', '#72bcd4');
+                const presentG = presentD3Svg.append("g").attr("id","current").attr("class","map")
+                presentG.append("path").attr("d",geoGeneratorPres(data)).style('fill', '#72bcd4');
                 presentG.append("svg:text")
                     .text(data.properties.NAME)
-                    .attr("x", width / 2)
-                    .attr("y", height / 2)
+                    .attr("x", width/2)
+                    .attr("y", height/2)
                     .attr("text-anchor", "middle")
                     .attr('font-size', '18pt');
                 presentG.append("svg:text")
                     .text(`${category} : ${categoryValue}`)
-                    .attr("x", width / 2)
-                    .attr("y", height / 2 + 30)
+                    .attr("x", width/2)
+                    .attr("y", height/2+30)
                     .attr("text-anchor", "middle")
                     .attr('font-size', '18pt');
-                prevFill = d3.select('#state-' + data.properties.GEO_ID).attr("fill")
-                prevState = data.properties.GEO_ID
+                prevFill=d3.select('#state-' + data.properties.GEO_ID).attr("fill")
+                prevState=data.properties.GEO_ID
                 setOldData(data)
+                setOldState(prevState)
                 return d3.select('#state-' + data.properties.GEO_ID).style('fill', '#72bcd4')
             }
             let projection = d3.geoAlbersUsa().scale(900).translate([400, 210]);
@@ -92,20 +94,20 @@ export function Usa(props) {
                 .attr('id', (data) => {
                     return 'state-' + data.properties.GEO_ID
                 }).on('click', handleClick)
-                .on('mouseover', (event, data) => {
-                    d3Svg.style("cursor", "pointer")
+                .on('mouseover',(event,data)=>{
+                    d3Svg.style("cursor","pointer")
                     d3.select('#state-' + data.properties.GEO_ID).style('fill', '#d0c172')
                 })
-                .on('mouseout', (event, data) => {
+                .on('mouseout',(event,data)=>{
                     const state = data.properties.NAME;
                     const stateObj = csvData.find(elem => elem.State === state)
                     const categoryValue = parseFloat(stateObj[category]);
-                    if (prevState === '' || prevState !== data.properties.GEO_ID) {
+                    if(prevState === '' || prevState !== data.properties.GEO_ID) {
                         d3.select('#state-' + data.properties.GEO_ID).style('fill', color(categoryValue))
-                    } else if (prevState === data.properties.GEO_ID) {
+                    }else if(prevState === data.properties.GEO_ID){
                         d3.select('#state-' + data.properties.GEO_ID).style('fill', '#72bcd4')
                     }
-                    d3Svg.style("cursor", "pointer")
+                    d3Svg.style("cursor","pointer")
                 })
             texts = g.selectAll('texts')
             texts.data(jsonData.features)
@@ -120,7 +122,7 @@ export function Usa(props) {
                 .attr("text-anchor", "middle")
                 .attr('font-size', '6pt')
                 .on('click', handleClick)
-            if (oldData !== undefined) {
+            if(oldData !== undefined) {
                 const state = oldData.properties.NAME;
                 const stateObj = csvData.find(elem => elem.State === state)
                 const categoryValue = parseFloat(stateObj[category]);
@@ -132,14 +134,14 @@ export function Usa(props) {
                 d3.select('#state-' + oldData.properties.GEO_ID).style('fill', '#72bcd4')
                 presentG.append("svg:text")
                     .text(oldData.properties.NAME)
-                    .attr("x", width / 2)
-                    .attr("y", height / 2)
+                    .attr("x", width/2)
+                    .attr("y", height/2)
                     .attr("text-anchor", "middle")
                     .attr('font-size', '18pt');
                 presentG.append("svg:text")
                     .text(`${category} : ${categoryValue}`)
-                    .attr("x", width / 2)
-                    .attr("y", height / 2 + 30)
+                    .attr("x", width/2)
+                    .attr("y", height/2+30)
                     .attr("text-anchor", "middle")
                     .attr('font-size', '18pt');
 
@@ -153,7 +155,7 @@ export function Usa(props) {
             const {height, width} = svg.current.getBBox();
             presentSvg.current.setAttribute("viewBox", `0 0 ${(width + 50)} ${height + 30}`)
             const presentD3Svg = d3.select(presentSvg.current)
-            if (oldData === undefined) {
+            if(oldData===undefined) {
                 presentD3Svg.insert("g").attr("id", "state").append("svg:text").text("Please click on state")
                     .attr("x", width / 2)
                     .attr("y", height / 2)
@@ -169,7 +171,7 @@ export function Usa(props) {
         const loadJson = d3.json("http://localhost:5001/usa-states.json").then(data => {
             setJsonData(data)
         })
-        Promise.allSettled([loadCsv, loadJson]).then(() => {
+        Promise.allSettled([loadCsv,loadJson]).then(()=>{
             setCategory("2010 Population")
         })
     }, [])
@@ -194,12 +196,12 @@ export function Usa(props) {
         </Row>
         <Row>
             <Col className="col-md-8">
-                <svg preserveAspectRatio="xMinYMin meet" ref={svg}>
-                    <g ref={ref} className="map"></g>
-                </svg>
+            <svg preserveAspectRatio="xMinYMin meet" ref={svg}>
+                <g ref={ref} className="map"></g>
+            </svg>
             </Col>
             <Col>
-                <svg preserveAspectRatio="xMinYMin meet" ref={presentSvg}/>
+                <svg preserveAspectRatio="xMinYMin meet" ref={presentSvg} />
             </Col>
         </Row></>
 }
