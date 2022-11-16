@@ -33,6 +33,12 @@ export function Usa(props) {
                 setOldName("")
                 setOldState("")
                 setOldData(undefined)
+                const {height, width} = svg.current.getBBox();
+                presentD3Svg.insert("g").attr("id", "state").append("svg:text").text("Please click on a state")
+                    .attr("x", width / 2)
+                    .attr("y", height / 2)
+                    .attr("text-anchor", "middle")
+                    .attr('font-size', '18pt');
             }
             const mouseover = ()=>{
                 presentD3Svg.style("cursor","pointer")
@@ -196,7 +202,6 @@ export function Usa(props) {
             presentSvg.current.setAttribute("viewBox", `0 0 ${(width + 50)} ${height + 30}`)
             const presentD3Svg = d3.select(presentSvg.current)
             if(oldData===undefined) {
-                presentD3Svg.insert("g").attr("id", "state").append("svg:text").text("Please click on a state")
                 presentD3Svg.insert("g").attr("id", "state").append("svg:text").text("Please click on a state")
                     .attr("x", width / 2)
                     .attr("y", height / 2)
